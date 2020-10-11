@@ -2,18 +2,12 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/Hide-on-bush2/stringutil"
+	"os"
 )
 
-func Hello(name string) string {
-	if name == "" {
-		return "Hello, world"
-	}
-	return "Hello, " + name
-}
-
 func main() {
-	fmt.Printf(stringutil.Reverse("!oG ,olleH"))
-	fmt.Printf(Hello(""))
+	for i, a := range os.Args[1:] {
+		fmt.Printf("Argument %d is %s\n", i+1, a)
+	}
+
 }
