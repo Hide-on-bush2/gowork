@@ -30,7 +30,7 @@ func get_arg(args *selpg_args) {
 	if len(file_name) > 0 {
 		args.in_filename = string(file_name[0])
 	} else {
-		args.in_filename = ""
+		args.in_filename = ""sa
 	}
 
 }
