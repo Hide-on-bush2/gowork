@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 
@@ -111,7 +112,7 @@ func Exec(args *selpg_args) {
 	if args.dest == "" {
 		output(os.Stdout, in_file, args)
 	} else {
-		cmd := exec.Command("lp", "-d"+args.dest)
+		cmd := exec.Command("cat", "-d"+args.dest)
 		fout, err := cmd.StdinPipe()
 		if err != nil {
 			Error("StdinPipe")
@@ -135,7 +136,7 @@ func Exec(args *selpg_args) {
 
 func output(fout interface{}, in_file *os.File, args *selpg_args) {
 	lines := 0
-	pages := 1
+	pages := 0
 	buf := bufio.NewReader(in_file)
 
 	for true {
@@ -157,13 +158,13 @@ func output(fout interface{}, in_file *os.File, args *selpg_args) {
 			}
 		}
 
-		//读到文件结尾
-		if err == io.EOF {
-			break
-		}
+		// //读到文件结尾
+		// if err == io.EOF {
+		// 	break
+		// }
 
 		//检查出错
-		if err != nil {
+		if err != nil && err != io.EOF {
 			Error("file read error")
 		}
 
@@ -171,17 +172,17 @@ func output(fout interface{}, in_file *os.File, args *selpg_args) {
 		if pages >= args.start_page && pages <= args.end_page {
 			var output_error error
 
-			stdOutput, ok := fout.(*os.File)
-			if ok {
-				_, output_error = fmt.FPrintf(stdOutput, "%s", line)
+			stdOutput, ok1 := fout.(*os.File)
+			if ok1 {
+				_, output_error = fmt.Fprintf(stdOutput, "%s", line)
 				if output_error != nil {
 					Error("output file error\n")
 				}
 				continue
 			}
 
-			pipeOutput, ok := fout.(io.WriterCLoser)
-			if ok {
+			pipeOutput, ok2 := fout.(io.WriteCloser)
+			if ok2 {
 				_, output_error = pipeOutput.Write([]byte(line))
 				if output_error != nil {
 					Error("output file error\n")
@@ -189,7 +190,13 @@ func output(fout interface{}, in_file *os.File, args *selpg_args) {
 				continue
 			}
 
-			Error("fout type error\n")
+			if output_error != nil {
+				Error("fout type error\n")
+			}
+		}
+
+		if err == io.EOF {
+			break
 		}
 	}
 
@@ -204,6 +211,6 @@ func main() {
 	var args selpg_args
 	get_arg(&args)
 	check_args(&args)
-	print_parameter(&args)
+	// print_parameter(&args)
 	Exec(&args)
 }

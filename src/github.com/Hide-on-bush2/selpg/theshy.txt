@@ -1,0 +1,7 @@
+start page:  1
+end page:  4
+lines per page:  72
+page type: f
+dest:  
+in filename:  faker.txt
+I am FakerI am TheshyI am Uzi
