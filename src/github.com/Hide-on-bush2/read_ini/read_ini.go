@@ -5,10 +5,27 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
+	"time"
 )
 
 var configure map[string]string
+
+var comment = ""
+
+type myError struct {
+	when time.Time
+	what string
+}
+
+func init() {
+	if runtime.GOOS == "windows" {
+		comment = ";"
+	} else {
+		comment = "#"
+	}
+}
 
 type iniReader struct {
 	r io.Reader
@@ -28,15 +45,16 @@ func checkError(err error, message string) {
 /*
 打印错误信息
 */
-func Error(message string) {
-	fmt.Fprintf(os.Stderr, "[Error]:"+message)
+func Error(err *myError) {
+	fmt.Fprintf(os.Stderr, err.when.String()+": [Error] "+err.what+"\n")
 }
 
-func getReader(filename string) (*bufio.Reader, error) {
+func getReader(filename string) (*bufio.Reader, *myError) {
 	file, err := os.Open(filename)
 	if err != nil {
-		Error("Read File\n")
-		return nil, err
+		var file_err = myError{time.Now(), "Open file fail"}
+		Error(&file_err)
+		return nil, &file_err
 	}
 
 	// defer file.Close()
@@ -74,7 +92,7 @@ func processString(str string) (key string, value string) {
 	return k, v
 }
 
-func getConf(reader *bufio.Reader) (map[string]string, error) {
+func getConf(reader *bufio.Reader) (map[string]string, *myError) {
 	res := make(map[string]string)
 
 	for {
@@ -84,8 +102,9 @@ func getConf(reader *bufio.Reader) (map[string]string, error) {
 		if err == io.EOF {
 			last_line = true
 		} else if err != nil {
-			Error("Read Line\n")
-			return nil, err
+			var read_err = myError{time.Now(), "Read file fail"}
+			Error(&read_err)
+			return nil, &read_err
 		}
 
 		//切掉行的左右两边的空白字符
@@ -97,7 +116,7 @@ func getConf(reader *bufio.Reader) (map[string]string, error) {
 		}
 
 		//忽略注释
-		if linestr[0] == '#' {
+		if linestr[0] == comment[0] {
 			continue
 		}
 
@@ -128,7 +147,7 @@ type Listener interface {
 
 type configuration map[string]string
 
-func Watch(filename string, listener Listener) (configuration, error) {
+func Watch(filename string, listener Listener) (configuration, *myError) {
 	reader, err := getReader(filename)
 	if err != nil {
 		return nil, err
@@ -167,13 +186,13 @@ func (methods listen_methods) listen(inifile string) {
 func myListen(filename string) {
 	reader, err := getReader(filename)
 	if err != nil {
-		Error("Listening Read File\n")
+		Error(&myError{time.Now(), "Listening open file fail"})
 		os.Exit(1)
 	}
 
 	tmpConf, err := getConf(reader)
 	if err != nil {
-		Error("Listening Read Line\n")
+		Error(&myError{time.Now(), "Listening read file fail"})
 		os.Exit(1)
 	}
 
@@ -199,4 +218,6 @@ func main() {
 
 	hide_on_bush := listen_methods{myListen}
 	Watch("./test.ini", hide_on_bush)
+	// Watch("./test2.ini", hide_on_bush)
+
 }
