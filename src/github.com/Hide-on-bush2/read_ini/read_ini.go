@@ -1,4 +1,5 @@
-package main
+//I am Faker
+package read_ini
 
 import (
 	"bufio"
@@ -168,8 +169,8 @@ func Watch(filename string, listener Listener) (configuration, *myError) {
 	return configure, nil
 }
 
-type listen_methods struct {
-	f1 ListenFunc
+type Listen_methods struct {
+	F1 ListenFunc
 }
 
 func printConfigue() {
@@ -179,11 +180,11 @@ func printConfigue() {
 	fmt.Println()
 }
 
-func (methods listen_methods) listen(inifile string) {
-	methods.f1(inifile)
+func (methods Listen_methods) listen(inifile string) {
+	methods.F1(inifile)
 }
 
-func myListen(filename string) {
+func MyListen(filename string) {
 	reader, err := getReader(filename)
 	if err != nil {
 		Error(&myError{time.Now(), "Listening open file fail"})
@@ -209,15 +210,15 @@ func myListen(filename string) {
 
 }
 
-func main() {
-	// sr := strings.NewReader("Lbh penpxrq gur pbqr!")
-	// rr := iniReader{sr}
-	// io.Copy(os.Stdout, &rr)
-	// readFile("$GOPATH/src/github.com/Hide-on-bush2/read_ini/test.ini")
-	// readFile("./test.ini")
+// func main() {
+// 	// sr := strings.NewReader("Lbh penpxrq gur pbqr!")
+// 	// rr := iniReader{sr}
+// 	// io.Copy(os.Stdout, &rr)
+// 	// readFile("$GOPATH/src/github.com/Hide-on-bush2/read_ini/test.ini")
+// 	// readFile("./test.ini")
 
-	hide_on_bush := listen_methods{myListen}
-	Watch("./test.ini", hide_on_bush)
-	// Watch("./test2.ini", hide_on_bush)
+// 	hide_on_bush := listen_methods{myListen}
+// 	Watch("./test.ini", hide_on_bush)
+// 	// Watch("./test2.ini", hide_on_bush)
 
-}
+// }

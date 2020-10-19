@@ -1,13 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
+import "github.com/Hide-on-bush2/read_ini"
 
 func main() {
-	for i, a := range os.Args[1:] {
-		fmt.Printf("Argument %d is %s\n", i+1, a)
-	}
+	hide_on_bush := read_ini.Listen_methods{read_ini.MyListen}
+	read_ini.Watch("../read_ini/test.ini", hide_on_bush)
 
 }
