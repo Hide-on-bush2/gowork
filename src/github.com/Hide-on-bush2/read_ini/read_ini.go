@@ -20,6 +20,7 @@ type myError struct {
 	what string
 }
 
+//兼容不同OS
 func init() {
 	if runtime.GOOS == "windows" {
 		comment = ";"
@@ -50,6 +51,9 @@ func Error(err *myError) {
 	fmt.Fprintf(os.Stderr, err.when.String()+": [Error] "+err.what+"\n")
 }
 
+/*
+根据传入的文件路径名返回一个Reader
+*/
 func getReader(filename string) (*bufio.Reader, *myError) {
 	file, err := os.Open(filename)
 	if err != nil {
@@ -140,14 +144,22 @@ func getConf(reader *bufio.Reader) (map[string]string, *myError) {
 	return res, nil
 }
 
+/*监听函数的函数签名
+ */
 type ListenFunc func(string)
 
+/*
+监听器
+*/
 type Listener interface {
 	listen(inifile string)
 }
 
 type configuration map[string]string
 
+/*
+实现监听
+*/
 func Watch(filename string, listener Listener) (configuration, *myError) {
 	reader, err := getReader(filename)
 	if err != nil {
@@ -169,6 +181,9 @@ func Watch(filename string, listener Listener) (configuration, *myError) {
 	return configure, nil
 }
 
+/*
+监听函数的实现
+*/
 type Listen_methods struct {
 	F1 ListenFunc
 }
@@ -184,6 +199,9 @@ func (methods Listen_methods) listen(inifile string) {
 	methods.F1(inifile)
 }
 
+/*
+自定义监听函数
+*/
 func MyListen(filename string) {
 	reader, err := getReader(filename)
 	if err != nil {
