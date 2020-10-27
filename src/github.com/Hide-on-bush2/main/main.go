@@ -12,14 +12,26 @@ import (
 
 // }
 
-type tmp struct {
-	name string
-	team string
-	year int
-}
+// type tmp struct {
+// 	name string
+// 	team string
+// 	year int
+// }
 
 func main() {
-	json, _ := MyMarshal.JsonMarshal(tmp{"Faker", "SKT", 10})
+	type tmp struct {
+		Name     []string          `json:"name"`
+		Team     string            `json:"team"`
+		Year     int               `json:"old"`
+		Test_map map[string]string `json:"-"`
+	}
+	m := make(map[string]string)
+	m["Faker"] = "Mid"
+	m["Theshy"] = "top"
+	m["UZI"] = "ADCarry"
+
+	t := tmp{Name: []string{"Faker", "bengi", "bang"}, Team: "SKT", Year: 10, Test_map: m}
+	json, _ := MyMarshal.JsonMarshal(t)
 	fmt.Println(string(json))
 	// t := tmp{"Faker", "SKT", 10}
 	// obj_type := reflect.TypeOf(t)
