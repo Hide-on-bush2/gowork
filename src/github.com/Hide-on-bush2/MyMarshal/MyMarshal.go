@@ -14,35 +14,28 @@ func JsonMarshal(v interface{}) ([]byte, error) {
 func processTag(tag reflect.StructTag) int {
 	field, ok := tag.Lookup("json")
 	if !ok {
-		//跳过，不用处理该字段
 		return 0
 	}
 	if field == "-" {
-		//忽略该字段
 		return 1
 	}
 	if field == "-," {
-		//该字段的键为"-"
 		return 2
 	}
 	sep := ","
 	arr := strings.Split(field, sep)
 
 	if len(arr) != 2 {
-		//该字段的键为field
 		return 5
 	}
 
 	if arr[1] == "omitempty" {
 		if arr[0] == "" {
-			//该字段的键为field，如果值为空，省略该字段
 			return 3
 		} else {
-			//该字段的键为arr[0]，如果值为空，省略该字段
 			return 4
 		}
 	} else {
-		//该标签无效，跳过
 		return 0
 	}
 }
@@ -73,7 +66,6 @@ func struct2str(v interface{}) (string, error) {
 		// str = obj_type.Name + " : " + strconv.FormatInt(obj.Int(), 10)
 	case reflect.Struct:
 		count := obj.NumField()
-		str += "{"
 		for i := 0; i < count; i++ {
 			field_name := obj_type.Field(i)
 			field_val := obj.Field(i)
@@ -104,8 +96,7 @@ func struct2str(v interface{}) (string, error) {
 				}
 				key = str_arr[0]
 			}
-
-			str += key + ":"
+			str += "\"" + key + "\":"
 			t_str, _ := struct2str(field_val.Interface())
 			str += t_str
 			// str += fmt.Sprintf("%v", field_val)
@@ -114,8 +105,8 @@ func struct2str(v interface{}) (string, error) {
 			}
 			// fmt.Printf(t_str)
 		}
-		str = strings.TrimRight(str, ",")
-		str += "}"
+
+		str = "{" + strings.TrimRight(str, ",") + "}"
 		// return str, nil
 	case reflect.Slice:
 		str += "["
