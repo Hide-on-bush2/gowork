@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/pmlpml/rxgo"
+	"github.com/Hide-on-bush2/rxgo"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -573,7 +573,7 @@ var skipOperater = transOperater{func(ctx context.Context, o *Observable, x refl
 	return
 }}
 
-//Homework, Skip
+//Homework, Take
 
 func (parent *Observable) Take(count int) (o *Observable) {
 	// check validation of f

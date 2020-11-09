@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"testing"
 	"time"
-
-	"github.com/pmlpml/rxgo"
+	"github.com/Hide-on-bush2/rxgo"
 )
 
 type observer struct {
@@ -61,4 +60,102 @@ func TestTreading(t *testing.T) {
 	//time.Sleep(time.Nanosecond * 1000)
 	flow.Subscribe(observer{"test flatMap again"})
 	time.Sleep(time.Microsecond * 1000)
+}
+
+func TestDebounce(t *testing.T){
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").Map(func(x string)string{
+		if x != "Faker"{
+			time.Sleep(1*time.Millisecond)
+		}
+		return x
+	}).Debounce(2*time.Millisecond).Subscribe(func(x string){
+		if x != "dasima" {
+			t.Errorf("Debounce Fail")
+		}
+	})
+}
+
+func TestDistinct(t *testing.T){
+	var all = map[string]bool{}
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima", "Faker").Distinct().Subscribe(func(x string){
+		if _, ok := all[x]; !ok{
+			all[x] = true
+			return
+		}
+		t.Errorf("Distinct Fail")
+	})
+}
+
+func TestElementAt(t *testing.T){
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").ElementAt("Faker").Subscribe(func(x string){
+		if x != "Faker" {
+			t.Errorf("ElementAt Fail")
+		}
+	})
+}
+
+func TestFirst(t *testing.T){
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").First(func(x interface{})bool{return true}).Subscribe(func(x string){
+		if x != "Faker" {
+			t.Errorf("First Fail")
+		}
+	})
+}
+
+func TestIgnoreElements(t *testing.T){
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").IgnoreElements().Subscribe(func(x string){
+		t.Errorf("IgnoreElements Fail")
+	})
+}
+
+func TestLast(t *testing.T){
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").Last().Subscribe(func(x string){
+		if x != "dasima"{
+			t.Errorf("Last Fail")
+		}	
+	})
+}
+
+func TestSkip(t *testing.T){
+	var skiparr = []string{"Showmaker","Nuguri","Uzi","dasima"}
+	var count = 0
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").Skip(4).Subscribe(func(x string){
+		if x != skiparr[count]{
+			t.Errorf("Skip Fail")
+		}
+		count++
+	})
+}
+
+func TestSkiplast(t *testing.T){
+	var skiparr = []string{"Faker","Theshy","Doinb"}
+	var count = 0
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").Skiplast(5).Subscribe(func(x string){
+		if x != skiparr[count]{
+			t.Errorf("Skiplast Fail")
+		}
+		count++
+	})
+}
+
+func TestTake(t *testing.T){
+	var takearr = []string{"Faker","Theshy","Doinb"}
+	var count = 0
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").Take(3).Subscribe(func(x string){
+		if x != takearr[count]{
+			t.Errorf("Take Fail")
+		}
+		count++
+	})
+}
+
+func TestTakelast(t *testing.T){
+	var takelastarr = []string{"Nuguri","Uzi","dasima"}
+	var count = 0
+	rxgo.Just("Faker","Theshy","Doinb","Clearlove","Showmaker","Nuguri","Uzi","dasima").Takelast(3).Subscribe(func(x string){
+		if x != takelastarr[count]{
+			t.Errorf("Takelast Fail")
+		}
+		count++
+	})
 }
